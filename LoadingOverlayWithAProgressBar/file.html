@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>loading overlay with a progress bar</title>
+<style>
+ /* - The `#overlay` rule styles a fixed-position overlay with a black background and a transition effect. */
+  #overlay {
+    position: fixed;
+    z-index: 99999;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.9);
+    transition: 1s 0.4s;
+  }
+ /* - The `#progress` rule styles a thin white progress bar that will be animated. */
+ #progress {
+    height: 1px;
+    background: #fff;
+    position: absolute;
+    width: 0;
+    top: 50%;
+    transition: 1s;
+  }
+ /* - The `#progstat` rule styles a loading status message. */
+ #progstat {
+    font-size: 0.7em;
+    letter-spacing: 3px;
+    position: absolute;
+    top: 50%;
+    margin-top: -40px;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+
+  <div id="overlay">
+    <div id="progstat"></div>
+    <div id="progress"></div>
+  </div>
+
+ <script>
+  
+    // - The `id(v)` function is defined to retrieve an element by its ID. 
+
+    (function () {
+      function id(v) {
+        return document.getElementById(v);
+      }
+
+    // - The `loadbar()` function initializes the loading process.
+    // - Inside `loadbar()`, it calculates the total number of images (`img.length`) and initializes a counter `c`.
+
+    function loadbar() {
+        var ovrl = id("overlay"),
+          prog = id("progress"),
+          stat = id("progstat"),
+          img = document.images,
+          c = 0,
+          tot = img.length;
+      if (tot === 0) return doneLoading();
+
+    // - The `imgLoaded()` function increments the counter and updates the progress bar and status message.
+    // - When all images are loaded (`c === tot`), the `doneLoading()` function hides the overlay after a delay.
+    // - Finally, a loop loads each image and assigns event handlers for successful and failed loading. 
+
+    function imgLoaded() {
+          c += 1;
+          var perc = ((100 / tot * c) << 0) + "%";
+          prog.style.width = perc;
+          stat.innerHTML = "Loading " + perc;
+          if (c === tot) return doneLoading();
+        }
+    function doneLoading() {
+          ovrl.style.opacity = 0;
+          setTimeout(function () {
+            ovrl.style.display = "none";
+          }, 1200);
+        }
+     for (var i = 0; i < tot; i++) {
+          var tImg = new Image();
+          tImg.onload = imgLoaded;
+          tImg.onerror = imgLoaded;
+          tImg.src = img[i].src;
+        }
+      }
+
+     // .Execution Flow:
+     // - When the page loads, the `DOMContentLoaded` event triggers the `loadbar()` function.
+     // - Images are loaded, and the progress bar updates accordingly.
+     // - Once all images are loaded, the overlay fades out.
+
+    document.addEventListener("DOMContentLoaded", loadbar, false);
+    })();
+ </script>
+
+</body>
+</html>
